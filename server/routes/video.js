@@ -26,6 +26,16 @@ let storage = multer.diskStorage({
   }
 })
 
+router.get('/getVideos', (req, res) => {
+  // DB에서 비디오 정보 가져오기
+  Video.find()
+    .populate('writer') // populate 해야 참조타입 정보 가져올 수 있음.
+    .exec((err, videos) => {
+      if (err) return res.status(400).send(err)
+      res.status(200).json({ success: true, videos })
+    })
+})
+
 const upload = multer({ storage: storage }).single("file")
 
 router.post('/uploadfiles', (req, res) => {
