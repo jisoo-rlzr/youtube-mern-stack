@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Typography, Button, Form, message, Input, Icon } from 'antd'
 import DropZone from 'react-dropzone'
 import Axios from 'axios'
@@ -18,7 +19,8 @@ const Category = [
   { value: 3, label: "Pets & Animals" }
 ]
 
-function VideoUploadPage() {
+function VideoUploadPage(props) {
+  const user = useSelector(state => state.user)
 
   const [videoTitle, setVideoTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -51,11 +53,38 @@ function VideoUploadPage() {
                 setDuration(response.data.fileDuration)
                 setThumbnailPath(response.data.url)
               } else {
-                alert('썸네일 생성에 실패 했습니다.')
+                alert('썸네일 생성에 실패했습니다.')
               }
             })
         } else {
           alert('업로드를 실패했습니다.')
+        }
+      })
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    let variables = {
+      writer: user.userData._id,
+      title: videoTitle,
+      description: description,
+      privacy: privateValue,
+      filePath: filePath,
+      category: categoryValue,
+      duration: duration,
+      thumbnail: thumbnailPath
+    }
+
+    Axios.post('/api/video/uploadVideo', variables)
+      .then(response => {
+        if (response.data.success) {
+          message.success('성공적으로 업로드 했습니다.')
+          setTimeout(() => {
+            props.history.push('/')
+          }, 2000)
+        } else {
+          alert('비디오 업로드에 실패했습니다.')
         }
       })
   }
@@ -65,7 +94,7 @@ function VideoUploadPage() {
       <div style={{ textAlign:'center', marginBottom:'2rem' }}>
         <Title level={2}>Upload Video</Title>
       </div>
-      <Form onSubmit>
+      <Form onSubmit={onSubmit}>
         <div style={{ display:'flex', justifyContent:'space-between' }}>
           <DropZone
             onDrop={onDrop}
@@ -122,7 +151,7 @@ function VideoUploadPage() {
         </select>
         <br/>
         <br/>
-        <Button type="primary" size="large" onClick>Submit</Button>
+        <Button type="primary" size="large" onClick={onSubmit}>Submit</Button>
       </Form>
     </div>
   )

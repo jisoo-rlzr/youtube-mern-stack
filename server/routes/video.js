@@ -37,6 +37,15 @@ router.post('/uploadfiles', (req, res) => {
   })
 })
 
+router.post('/uploadVideo', (req, res) => {
+  // DB에 비디오 정보 저장하기
+  let video = new Video(req.body)
+  video.save((err, doc) => {
+    if (err) return res.json({ success: false, err })
+    res.status(200).json({ success: true })
+  })
+})
+
 router.post('/thumbnail', (req, res) => {
 
   var filePath = ""
