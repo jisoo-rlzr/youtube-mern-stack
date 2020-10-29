@@ -24,13 +24,16 @@ function VideoDetailPage(props) {
   if (!videoDetail.writer) {
     return (<div> L O A D I N G </div>)
   } else {
+
+    const subscribeButton = videoDetail.writer._id !== localStorage.getItem('userId') && <Subscribe userTo={videoDetail.writer._id}/>
+
     return (
       <Row gutter={[16, 16]}>
         <Col lg={18} xs={24}>
           <div style={{ width: '100%', padding: '3rem 4rem' }}>
             <video style={{ width: '100%' }} src={`http://localhost:5000/${videoDetail.filePath}`} controls/>
   
-            <List.Item actions={[<Subscribe userTo={videoDetail.writer._id}/>]}>
+            <List.Item actions={[subscribeButton]}>
               <List.Item.Meta
                 avatar={videoDetail.writer.image}
                 title={videoDetail.writer.name}
